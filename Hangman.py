@@ -8,7 +8,9 @@ i = 0
 randWord = ""
 vowel = "aeiou"
 exceptu = "aeio"
-while i < 10:
+randLen = random.randint(7, 12)
+
+while i < randLen:
     randNum = random.randint(97, 122)
     randLet = str(chr(randNum))
 
@@ -26,9 +28,6 @@ while i < 10:
         randLet = random.choice(vowel)
         randWord = randWord + randLet
         i += 1
-
-print(randWord)
-print(len(randWord))
 
 #Start the game.
 print("Welcome to Gibberish Hangman. Good luck.")
