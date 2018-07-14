@@ -29,6 +29,8 @@ while i < randLen:
         randWord = randWord + randLet
         i += 1
 
+
+
 #Start the game.
 print("Welcome to Gibberish Hangman. Good luck.")
 print("Here's the word: ", end="")
@@ -41,15 +43,27 @@ patience = 5
 limbs = ['left leg.', 'right leg.', 'left arm.', 'right arm.']
 
 
-#Initialize guess container:
+#Initialize progress:
 currentProgress = list(range(len(randWord)))
 for i in currentProgress:
     currentProgress[i] = '_'
 
+#Initialize guess container:
 guess = ''
 guessContainer = ''
 snarky = 1
 pain = ['Oof.', 'Ouch.', 'Owie.']
+
+#Constants for printing head. Put outside of while loop because not continually updated.
+headWidth = 5
+SPACING = 4
+headSpacing = 1
+midHeadWidth = headWidth + 2
+eyeGap = midHeadWidth // 2
+eyeFromEar = eyeGap - 2
+SPACE = " "
+eye = "|"
+
 while not win:
 
     if patience == 0:
@@ -91,7 +105,7 @@ while not win:
         print("You've already guessed that letter.")
         continue
 
-    ##For correct guess:
+    #For correct guess:
     if guess in randWord:
 
         for index in range(len(randWord)):
@@ -111,6 +125,16 @@ while not win:
         #Losing head will always be last, and will result in loss.
         if len(limbs) == 0:
             print("And off goes your head. You lose! The word was obviously " + randWord + ".")
+            eye = 'X'
+            for i in range(4):
+                if i == 0:
+                    print((SPACE * (headSpacing + 1)) + ("_" * headWidth))
+                elif i == 1:
+                    print(SPACE * headSpacing + "/" + SPACE * headWidth + "\\")
+                elif i == 2:
+                    print("|" + (SPACE * eyeFromEar) + eye + (SPACE * eyeGap) + eye + (SPACE * eyeFromEar) + "|")
+                elif i == 3:
+                    print(SPACE * headSpacing + "\\" + "_" * headWidth + "/")
             break
 
         #Incorrect guesses prior to loss of head results in random removal of limb
@@ -118,6 +142,7 @@ while not win:
         painChoice = random.randint(1, len(pain)) - 1
         print("Incorrect. You've lost your " + limbs[limbChoice] + " " + pain[painChoice])
         limbs.remove(limbs[limbChoice])
+
 
         #Loss of arms:
         limbsString = ''.join(limbs)
@@ -144,6 +169,71 @@ while not win:
         print(currentProgress[j], end='')
         print(' ', end='')
     print()
+
+    # Check body status
+    leftArmStat = 'left arm.' in limbs
+    rightArmStat = 'right arm.' in limbs
+    leftLegStat = 'left leg.' in limbs
+    rightLegStat = 'right leg.' in limbs
+
+    # Printing body (headfirst):
+
+    for i in range(4):
+        if i == 0:
+            print((SPACE * (headSpacing + 1)) + ("_" * headWidth))
+        elif i == 1:
+            print(SPACE * headSpacing + "/" + SPACE * headWidth + "\\")
+        elif i == 2:
+            print("|" + (SPACE * eyeFromEar) + eye + (SPACE * eyeGap) + eye + (SPACE * eyeFromEar) + "|")
+        elif i == 3:
+            print(SPACE * headSpacing + "\\" + "_" * headWidth + "/")
+
+    # Torso + arms
+    spacing = 0
+    arm2torso = 0
+    leftArmSeg = rightArmSeg = ""
+    TORSO_LEN = 4
+    torso = "|"
+
+    for i in range(TORSO_LEN):
+
+        if i < (TORSO_LEN - 1):
+            spacing = SPACING - (i + 1)
+            arm2torso = i
+            if leftArmStat:
+                leftArmSeg = "/" + SPACE * arm2torso
+            else:
+                leftArmSeg = SPACE * (arm2torso + 1)
+            if rightArmStat:
+                rightArmSeg = SPACE * arm2torso + "\\"
+            else:
+                rightArmSeg = ""
+
+        print(SPACE * spacing + leftArmSeg + torso + rightArmSeg)
+        spacing = SPACING
+        leftArmSeg = rightArmSeg = ""
+
+    # Legs
+    legSpace = 0
+
+    for i in range(3):
+        spacing = SPACING - (i + 1)
+        if i == 0:
+            legSpace = 1
+        else:
+            legSpace = (2 * i) + 1
+
+        if leftLegStat:
+            leftLegSeg = "/"
+        else:
+            leftLegSeg = " "
+        if rightLegStat:
+            rightLegSeg = "\\"
+        else:
+            rightLegSeg = " "
+
+        print((SPACE * spacing) + leftLegSeg + (SPACE * legSpace) + rightLegSeg)
+
 
 if win:
     print('The word is indeed "' + randWord + '". Congratulations! What now?')
